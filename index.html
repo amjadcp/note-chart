@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flowchart with Cytoscape.js</title>
+    <style>
+    
+    body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #cy {
+            height: 600px;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 999;
+        }
+        .selected {
+            border: 2px solid green; /* Highlight selected nodes */
+        }
+        .context-menu {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/cytoscape-resize@1.0.0/cytoscape-resize.css" />
+</head>
+<body>
+    <div id="cy"></div>
+    <div id="controls">
+        <button id="addNode">Add Node</button>
+    </div>
+    <div class="context-menu">
+        <button id="deleteNode">Delete Node</button>
+        <button id="deleteEdge">Delete Edge</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-resize@1.0.0/cytoscape-resize.js"></script>
+    <script>
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: [],
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'shape': 'rectangle',
+                        'background-color': 'lightblue',
+                        'border-color': 'blue',
+                        'border-width': '1px',
+                        'color': 'black',
+                        'content': 'data(label)',
+                        'text-halign': 'center',
+                        'text-valign': 'center',
+                        'width': '100px',
+                        'height': '50px',
+                        'font-size': '14px',
+                        'padding': '10px'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 3,
+                        'line-color': '#ddd',
+                        'target-arrow-color': '#ddd',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+            layout: {
+                name: 'cose',
+                padding: 10
+            }
+        });
+
+        // Enable resizing for nodes
+        cy.resize({
+            minWidth: 50,
+            minHeight: 50,
+            maxWidth: 300,
+            maxHeight: 300
+        });
+
+        document.getElementById('addNode').addEventListener('click', function() {
+            var label = prompt("Enter node label:", "New Node") || "New Node";
+            cy.add({
+                group: 'nodes',
+                data: { label: label },
+                position: {
+                    x: Math.random() * 400,
+                    y: Math.random() * 400
+                }
+            });
+        });
+
+        let selectedNodes = [];
+        let selectedEdge = null;
+        let selectedNode = null;
+
+        cy.on('tap', 'node', function(event) {
+            var node = event.target;
+
+            // Toggle selection
+            if (selectedNodes.includes(node)) {
+                selectedNodes = selectedNodes.filter(n => n !== node);
+                node.removeClass('selected');
+            } else {
+                if (selectedNodes.length < 2) {
+                    selectedNodes.push(node);
+                    node.addClass('selected');
+                }
+            }
+
+            // If two nodes are selected, connect them
+            if (selectedNodes.length === 2) {
+                var source = selectedNodes[0];
+                var target = selectedNodes[1];
+                cy.add({
+                    group: 'edges',
+                    data: {
+                        source: source.id(),
+                        target: target.id()
+                    }
+                });
+                // Clear selection
+                selectedNodes.forEach(n => n.removeClass('selected'));
+                selectedNodes = [];
+            }
+        });
+
+        // Delete edge on right-click
+        cy.on('cxttap', 'edge', function(event) {
+            var edge = event.target;
+            selectedEdge = edge;
+            selectedNode = null;
+            showContextMenu(event.clientX, event.clientY);
+        });
+
+        // Delete node on right-click
+        cy.on('cxttap', 'node', function(event) {
+            var node = event.target;
+            selectedNode = node;
+            selectedEdge = null;
+            showContextMenu(event.clientX, event.clientY);
+        });
+
+        // Delete selected edge or node
+        document.getElementById('deleteEdge').addEventListener('click', function() {
+            if (selectedEdge) {
+                selectedEdge.remove(); // Remove the edge
+                selectedEdge = null;
+                hideContextMenu();
+            }
+        });
+
+        document.getElementById('deleteNode').addEventListener('click', function() {
+            if (selectedNode) {
+                selectedNode.remove(); // Remove the node
+                selectedNode = null;
+                hideContextMenu();
+            }
+        });
+
+        cy.on('tap', function(event) {
+            if (event.target === cy) {
+                // Clear selection if clicking on the background
+                selectedNodes.forEach(n => n.removeClass('selected'));
+                selectedNodes = [];
+                selectedEdge = null;
+                selectedNode = null;
+                hideContextMenu();
+            }
+        });
+
+        function showContextMenu(x, y) {
+            var menu = document.querySelector('.context-menu');
+            menu.style.display = 'block';
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+        }
+
+        function hideContextMenu() {
+            var menu = document.querySelector('.context-menu');
+            menu.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
