@@ -62,6 +62,10 @@ let selectedNodes = [];
 let selectedEdge = null;
 let selectedNode = null;
 
+// Modal functionality
+let modal = document.getElementById("myModal");
+let span = document.getElementsByClassName("close")[0];
+
 // Select nodes on left-click
 cy.on("tap", "node", function (event) {
   var node = event.target;
@@ -102,29 +106,12 @@ cy.on("cxttap", "edge", function (event) {
   showDeleteButton("deleteEdge");
 });
 
-// Show delete button on right-click on node
-cy.on("cxttap", "node", function (event) {
-  var node = event.target;
-  selectedNode = node;
-  selectedEdge = null;
-  showDeleteButton("deleteNode");
-});
-
 // Delete selected edge
 document.getElementById("deleteEdge").addEventListener("click", function () {
   if (selectedEdge) {
     selectedEdge.remove(); // Remove the edge
     selectedEdge = null;
     hideDeleteButton("deleteEdge");
-  }
-});
-
-// Delete selected node
-document.getElementById("deleteNode").addEventListener("click", function () {
-  if (selectedNode) {
-    selectedNode.remove(); // Remove the node
-    selectedNode = null;
-    hideDeleteButton("deleteNode");
   }
 });
 
@@ -135,14 +122,13 @@ cy.on("tap", function (event) {
     selectedNodes = [];
     selectedEdge = null;
     selectedNode = null;
-    hideDeleteButton("deleteNode");
     hideDeleteButton("deleteEdge");
   }
 });
 
 // type = "deleteNode" or "deleteEdge"
 const showDeleteButton = (type) => {
-  const button = document.querySelector("#"+type);
+  const button = document.querySelector("#" + type);
   button.style.display = "block";
   // button.style.left = x + "px";
   // button.style.top = y + "px";
@@ -150,9 +136,63 @@ const showDeleteButton = (type) => {
 
 // type = "deleteNode" or "deleteEdge"
 const hideDeleteButton = (type) => {
-  const button = document.querySelector("#"+type);
+  const button = document.querySelector("#" + type);
   button.style.display = "none";
 };
+
+// open modal on right-click on node
+cy.on("cxttap", "node", function (event) {
+  const node = event.target;
+  selectedNode = node;
+  selectedEdge = null;
+  document.getElementById("nodeLabel").value = selectedNode.data("label"); // Set current label in input
+  modal.style.display = "block"; // Show modal
+});
+
+// Edit selected node
+document.getElementById("saveNodeLabel").addEventListener("click", function () {
+  if (selectedNode) {
+    var newLabel = document.getElementById("nodeLabel").value;
+    selectedNode.data("label", newLabel); // Update node label
+    selectedNode.style("content", newLabel); // Update displayed content
+    modal.style.display = "none"; // Hide modal
+  }
+});
+
+// Delete selected node
+document.getElementById("deleteNode").addEventListener("click", function () {
+  if (selectedNode) {
+    selectedNode.remove(); // Remove the node
+    selectedNode = null;
+    modal.style.display = "none"; // Hide modal
+  }
+});
+
+// Close modal when clicking outside of it
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+
+// Close modal
+span.onclick = function () {
+  modal.style.display = "none"; // Hide modal
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // export and import flowchart
 document.getElementById("importJSON").addEventListener("click", function () {
@@ -235,37 +275,3 @@ document.getElementById("exportJSON").addEventListener("click", function () {
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
 });
-
-// Modal functionality
-var modal = document.getElementById("myModal");
-var span = document.getElementsByClassName("close")[0];
-var currentNode = null;
-
-// Show modal on node click
-// cy.on("tap", "node", function (event) {
-//   currentNode = event.target;
-//   document.getElementById("nodeLabel").value = currentNode.data("label"); // Set current label in input
-//   modal.style.display = "block"; // Show modal
-// });
-
-// // Close modal
-// span.onclick = function () {
-//   modal.style.display = "none"; // Hide modal
-// };
-
-// // Save node label
-// document.getElementById("saveNodeLabel").addEventListener("click", function () {
-//   if (currentNode) {
-//     var newLabel = document.getElementById("nodeLabel").value;
-//     currentNode.data("label", newLabel); // Update node label
-//     currentNode.style("content", newLabel); // Update displayed content
-//     modal.style.display = "none"; // Hide modal
-//   }
-// });
-
-// // Close modal when clicking outside of it
-// window.onclick = function (event) {
-//   if (event.target == modal) {
-//     modal.style.display = "none";
-//   }
-// };
