@@ -45,6 +45,7 @@ cy.resize({
   maxHeight: 300,
 });
 
+// Create a new node
 document.getElementById("addNode").addEventListener("click", function () {
   var label = prompt("Enter node label:", "New Node") || "New Node";
   cy.add({
@@ -61,6 +62,7 @@ let selectedNodes = [];
 let selectedEdge = null;
 let selectedNode = null;
 
+// Select nodes on left-click
 cy.on("tap", "node", function (event) {
   var node = event.target;
 
@@ -92,36 +94,37 @@ cy.on("tap", "node", function (event) {
   }
 });
 
-// Delete edge on right-click
+// Show delete button on right-click on edge
 cy.on("cxttap", "edge", function (event) {
   var edge = event.target;
   selectedEdge = edge;
   selectedNode = null;
-  showContextMenu(event.clientX, event.clientY);
+  showDeleteButton("deleteEdge");
 });
 
-// Delete node on right-click
+// Show delete button on right-click on node
 cy.on("cxttap", "node", function (event) {
   var node = event.target;
   selectedNode = node;
   selectedEdge = null;
-  showContextMenu(event.clientX, event.clientY);
+  showDeleteButton("deleteNode");
 });
 
-// Delete selected edge or node
+// Delete selected edge
 document.getElementById("deleteEdge").addEventListener("click", function () {
   if (selectedEdge) {
     selectedEdge.remove(); // Remove the edge
     selectedEdge = null;
-    hideContextMenu();
+    hideDeleteButton("deleteEdge");
   }
 });
 
+// Delete selected node
 document.getElementById("deleteNode").addEventListener("click", function () {
   if (selectedNode) {
     selectedNode.remove(); // Remove the node
     selectedNode = null;
-    hideContextMenu();
+    hideDeleteButton("deleteNode");
   }
 });
 
@@ -132,20 +135,23 @@ cy.on("tap", function (event) {
     selectedNodes = [];
     selectedEdge = null;
     selectedNode = null;
-    hideContextMenu();
+    hideDeleteButton("deleteNode");
+    hideDeleteButton("deleteEdge");
   }
 });
 
-const showContextMenu = (x, y) => {
-  var menu = document.querySelector(".context-menu");
-  menu.style.display = "block";
-  menu.style.left = x + "px";
-  menu.style.top = y + "px";
+// type = "deleteNode" or "deleteEdge"
+const showDeleteButton = (type) => {
+  const button = document.querySelector("#"+type);
+  button.style.display = "block";
+  // button.style.left = x + "px";
+  // button.style.top = y + "px";
 };
 
-const hideContextMenu = () => {
-  var menu = document.querySelector(".context-menu");
-  menu.style.display = "none";
+// type = "deleteNode" or "deleteEdge"
+const hideDeleteButton = (type) => {
+  const button = document.querySelector("#"+type);
+  button.style.display = "none";
 };
 
 // export and import flowchart
@@ -236,30 +242,30 @@ var span = document.getElementsByClassName("close")[0];
 var currentNode = null;
 
 // Show modal on node click
-cy.on("tap", "node", function (event) {
-  currentNode = event.target;
-  document.getElementById("nodeLabel").value = currentNode.data("label"); // Set current label in input
-  modal.style.display = "block"; // Show modal
-});
+// cy.on("tap", "node", function (event) {
+//   currentNode = event.target;
+//   document.getElementById("nodeLabel").value = currentNode.data("label"); // Set current label in input
+//   modal.style.display = "block"; // Show modal
+// });
 
-// Close modal
-span.onclick = function () {
-  modal.style.display = "none"; // Hide modal
-};
+// // Close modal
+// span.onclick = function () {
+//   modal.style.display = "none"; // Hide modal
+// };
 
-// Save node label
-document.getElementById("saveNodeLabel").addEventListener("click", function () {
-  if (currentNode) {
-    var newLabel = document.getElementById("nodeLabel").value;
-    currentNode.data("label", newLabel); // Update node label
-    currentNode.style("content", newLabel); // Update displayed content
-    modal.style.display = "none"; // Hide modal
-  }
-});
+// // Save node label
+// document.getElementById("saveNodeLabel").addEventListener("click", function () {
+//   if (currentNode) {
+//     var newLabel = document.getElementById("nodeLabel").value;
+//     currentNode.data("label", newLabel); // Update node label
+//     currentNode.style("content", newLabel); // Update displayed content
+//     modal.style.display = "none"; // Hide modal
+//   }
+// });
 
-// Close modal when clicking outside of it
-window.onclick = function (event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-};
+// // Close modal when clicking outside of it
+// window.onclick = function (event) {
+//   if (event.target == modal) {
+//     modal.style.display = "none";
+//   }
+// };
