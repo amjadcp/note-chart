@@ -229,3 +229,37 @@ document.getElementById("exportJSON").addEventListener("click", function () {
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
 });
+
+// Modal functionality
+var modal = document.getElementById("myModal");
+var span = document.getElementsByClassName("close")[0];
+var currentNode = null;
+
+// Show modal on node click
+cy.on("tap", "node", function (event) {
+  currentNode = event.target;
+  document.getElementById("nodeLabel").value = currentNode.data("label"); // Set current label in input
+  modal.style.display = "block"; // Show modal
+});
+
+// Close modal
+span.onclick = function () {
+  modal.style.display = "none"; // Hide modal
+};
+
+// Save node label
+document.getElementById("saveNodeLabel").addEventListener("click", function () {
+  if (currentNode) {
+    var newLabel = document.getElementById("nodeLabel").value;
+    currentNode.data("label", newLabel); // Update node label
+    currentNode.style("content", newLabel); // Update displayed content
+    modal.style.display = "none"; // Hide modal
+  }
+});
+
+// Close modal when clicking outside of it
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
