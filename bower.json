@@ -1,0 +1,21 @@
+{
+  "name": "notechart",
+  "homepage": "https://github.com/amjadcp/note-chart",
+  "authors": [
+    "amjadcp <amjadcp03@gmail.com>"
+  ],
+  "description": "",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "cytoscape": "^3.30.1",
+    "cytoscape-edgehandles": "^4.0.1"
+  }
+}

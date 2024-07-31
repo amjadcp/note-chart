@@ -6,17 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flowchart with Cytoscape.js</title>
     <link rel="stylesheet" href="./static/css/style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.css" />
-    <link rel="stylesheet" href="https://unpkg.com/cytoscape-resize@1.0.0/cytoscape-resize.css" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/cytoscape-resize@1.0.0/cytoscape-resize.css" /> -->
 </head>
 
 <body>
     <div id="cy"></div>
     <div id="controls">
         <button id="addNode">Add Node</button>
+        <button id="draw-on">Draw mode on</button>
+        <button id="draw-off">Draw mode off</button>
         <button id="importJSON">Import JSON</button>
         <button id="exportJSON">Export to JSON</button>
-        <!-- <button id="deleteNode" style="display: none;">Delete Node</button> -->
         <button id="deleteEdge" style="display: none;">Delete Edge</button>
     </div>
 
@@ -33,8 +34,10 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
-    <script src="https://unpkg.com/cytoscape-resize@1.0.0/cytoscape-resize.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script> -->
+    <script src="./bower_components/cytoscape/dist/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.js"></script>
+    <script src="./bower_components/cytoscape-edgehandles/cytoscape-edgehandles.js"></script>
     <script src="./static/js/cy.js"></script>
 </body>
 
